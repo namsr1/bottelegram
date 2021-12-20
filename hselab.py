@@ -3,6 +3,9 @@ from random import choice
 #функция которая выдает массив  со стенами и промежутками 
 def get_map_cell(cols, rows):
 	class Cell:
+		"""
+		создаем class cell , в нем будем хранить координаты (x,y),стены (walls) и посещали ли мы эту клетку (self.visited = False)
+		"""
 		def __init__(self, x, y):
 			self.x = x
 			self.y = y
@@ -10,11 +13,16 @@ def get_map_cell(cols, rows):
 			self.visited = False
 
 		def check_cell(self, x, y):
+			"""функция выдает индекс клетки по координатам ,сначала проверяем существование потом возвращаем индекс
+			"""
 			if x < 0 or x > cols - 1 or y < 0 or y > rows - 1:
 				return False
 			return grid_cell[x + y * cols]
 
 		def check_neighbours(self):
+			"""
+			функция которая возвращает случайного непосещенного соседа если его нет
+			"""
 			neighbours = []
 
 			top = self.check_cell(self.x, self.y - 1)
@@ -35,6 +43,10 @@ def get_map_cell(cols, rows):
 
 
 	def remove_walls(current_cell, next_cell):
+		"""
+		функция удаляет стены между текущей и следующей клеткой 
+		для этого находим разницу координатов и по ней определим какие стены нужно удалить 	
+		"""
 		dx = current_cell.x - next_cell.x
 		dy = current_cell.y - next_cell.y
 
@@ -52,12 +64,17 @@ def get_map_cell(cols, rows):
 			next_cell.walls['top'] = False
 
 	def check_wall(grid_cell, x, y):
+		"""
+		функция проверяет есть ли на данном месте стена
+		"""
 		if x % 2 == 0 and y % 2 == 0:
 			return False
 		if x % 2 == 1 and y % 2 == 1:
 			return True
-
+		
+		
 		if x % 2 == 0:
+			"""if x % 2 == 0 проверяет, является ли число четным.grid_x = x // 2 - проверяет четное ли оно,grid_y = (y - 1) // 2 -проверяет нечетность"""
 			grid_x = x // 2
 			grid_y = (y - 1) // 2
 			return grid_cell[grid_x + grid_y * cols].walls['bottom']
@@ -65,13 +82,19 @@ def get_map_cell(cols, rows):
 			grid_x = (x - 1) // 2
 			grid_y = y // 2
 			return grid_cell[grid_x + grid_y * cols].walls['right']
-
+#создаем сетку и будем хранить виде 1 мерного массива , заполняем построчко слева направо
 	grid_cell = [Cell(x, y) for y in range(rows) for x in range(cols)]
 	current_cell = grid_cell[0]
 	current_cell.visited = True
+	"""
+	чтобы лабиринт не доходил до клетки у которой нет непосещенного соседа и останавливался ,нужно сделать возврат для этого создаем stack
+	"""
 	stack = []
 
 	while True:
+		"""
+		создаем переменную в которой будем хранить следующую клетку ,если она  существует сделаем ее посещенной и запишем текущую 	 
+		"""
 		next_cell = current_cell.check_neighbours()
 		if next_cell:
 			next_cell.visited = True
